@@ -8,11 +8,9 @@
 #include <QTime>
 #include <QProcess>
 #include <QTextDocument>
+#include <QDesktopWidget>
 
-#define SIZE 75
-#define SIZEBIG 175
-#define WIDTH SIZE * 10
-#define HEIGHT SIZE * 7
+#include "nowplayingitem.h"
 
 class AlbumArtworkItem : public QGraphicsPixmapItem {
 public:
@@ -26,12 +24,12 @@ private:
         QDir dir("/home/keegan/.kde/share/apps/amarok/albumcovers/large/");
         QStringList coverList = dir.entryList(QDir::Files);
         int imageIndex = qrand() % coverList.size();
-
+        
+        qDebug() << "Loading " << dir.absoluteFilePath(coverList[imageIndex]);
         QPixmap pixmap(dir.absoluteFilePath(coverList[imageIndex]));
         m_artwork = pixmap.scaled(QSize(SIZE,SIZE),
                                   Qt::KeepAspectRatioByExpanding,
                                   Qt::SmoothTransformation);
-        
         
         setPixmap(m_artwork);
     }
@@ -39,77 +37,25 @@ private:
     QPixmap m_artwork;
 };
 
-class NowPlayingItem : public QGraphicsItemGroup {
-public:
-    NowPlayingItem() {
-        m_artworkitem.setParentItem(this);
-        m_text.setParentItem(this);
-        
-        m_artworkitem.setPos(0,0);
-        m_text.setPos(SIZEBIG + 10, 0);
-
-        m_text.setFont(QFont("Helvetica", 14, QFont::Bold));
-
-        updateNowPlaying();
-    }
-
-
-private:
-
-    void updateNowPlaying() {
-        if (amarokPlayerDCOP("isPlaying") != "true") {
-            setVisible(false);
-            return;            
-        }
-        setVisible(true);
-
-        QString text = QString("<font color=\"white\">")
-            + "<h1>" + Qt::escape(amarokPlayerDCOP("artist")) + "</h1>"
-            + "<h2>" + Qt::escape(amarokPlayerDCOP("album"))  + "</h2>"
-            + "<h2>" + Qt::escape(amarokPlayerDCOP("title"))  + "</h2>"
-            + QString("</font>");
-        m_text.setHtml(text);
-        qDebug() << text;
-
-        QPixmap pixmap(amarokPlayerDCOP("coverImage"));
-        m_artwork = pixmap.scaled(QSize(SIZEBIG,SIZEBIG),
-                                  Qt::KeepAspectRatio,
-                                  Qt::SmoothTransformation);
-        
-        m_artworkitem.setPixmap(m_artwork);
-    }
-
-    QString amarokPlayerDCOP(const QString &func) const {
-        QStringList arguments;
-        arguments << "amarok" << "player" << func;
-        
-        QProcess dcop;
-        dcop.start("dcop", arguments);
-
-        if (!dcop.waitForFinished())
-            return "";
-
-        return QString(dcop.readAllStandardOutput()).trimmed();
-    }
-
-    QGraphicsTextItem m_text;
-    QGraphicsPixmapItem m_artworkitem;
-    QPixmap m_artwork;
-};
-
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
-    
+
+    QRect screenSize = QApplication::desktop()->screenGeometry();
+    int width = screenSize.width();
+    int height = screenSize.height();
+    qreal wdelta = (width % SIZE) / 2;
+    qreal hdelta = (height % SIZE) / 2;
+
     QGraphicsScene scene;
-    scene.setSceneRect(0,0,WIDTH,HEIGHT);
+    scene.setSceneRect(0, 0, width, height);
     scene.setItemIndexMethod(QGraphicsScene::NoIndex);
     
-    for (int r = 0; r < WIDTH; r+=SIZE) {
-        for (int c = 0; c < HEIGHT; c+= SIZE) {
+    for (int r = 0; r < width; r+=SIZE) {
+        for (int c = 0; c < height; c+= SIZE) {
             AlbumArtworkItem *cover = new AlbumArtworkItem();
-            cover->setPos(r, c);
+            cover->setPos(r - wdelta, c - hdelta);
             scene.addItem(cover);
         }
     }
@@ -121,6 +67,8 @@ int main(int argc, char *argv[]) {
 
     QGraphicsView view(&scene);
     view.setWindowState(view.windowState() | Qt::WindowFullScreen);
+    view.setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    view.setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     // view.setRenderHint(QPainter::Antialiasing);
     // view.setBackgroundBrush(QPixmap(":/images/cheese.jpg"));
     // view.setCacheMode(QGraphicsView::CacheBackground);
