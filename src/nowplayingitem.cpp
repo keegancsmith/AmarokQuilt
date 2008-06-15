@@ -10,7 +10,7 @@ NowPlayingItem::NowPlayingItem() {
     m_textitem.setParentItem(this);
     m_artworkitem.setPos(0,0);
 
-    startTimer(1500);
+    startTimer(1000);
 }
 
 void NowPlayingItem::timerEvent(QTimerEvent *) {

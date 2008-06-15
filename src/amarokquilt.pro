@@ -9,5 +9,5 @@ DEPENDPATH += .
 INCLUDEPATH += .
 
 # Input
-HEADERS += nowplayingitem.h
-SOURCES += main.cpp nowplayingitem.cpp
+HEADERS += nowplayingitem.h amarokquilt.h
+SOURCES += main.cpp amarokquilt.cpp nowplayingitem.cpp

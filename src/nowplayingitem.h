@@ -6,8 +6,7 @@
 #include <QPixmap>
 #include <QGraphicsPixmapItem>
 
-#define SIZE 75
-#define SIZEBIG 175
+#define SIZEBIG 192
 
 class NowPlayingItem : public QObject, public QGraphicsItemGroup {
     Q_OBJECT;
