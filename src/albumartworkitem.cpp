@@ -1,7 +1,22 @@
+/**************************** -*- mode: c++ -*- ****************************
+ *                                                                         *
+ *   file            : albumartworkitem.cpp                                *
+ *   date started    : 15 Jun 2008                                         *
+ *   author          : Keegan Carruthers-Smith                             *
+ *   email           : keegan.csmith@gmail.com                             *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
 #include "albumartworkitem.h"
 
 #include <QDir>
 #include <QDebug>
+#include <cstdlib>
 
 AlbumArtworkItem::AlbumArtworkItem() {
     m_artwork = 0;
@@ -13,7 +28,7 @@ AlbumArtworkItem::AlbumArtworkItem() {
     setPixmap(m_artwork);
 
     m_timeline.setFrameRange(0, 100);
-    m_timeline.setDuration(2500);
+    m_timeline.setDuration(2100);
     connect(&m_timeline, SIGNAL(frameChanged(int)), SLOT(updateAnimation(int)));
     connect(&m_timeline, SIGNAL(finished()), SLOT(finishedAnimation()));
 }    
@@ -59,7 +74,7 @@ void AlbumArtworkItem::_updateArtwork() {
     QDir dir(QDir::homePath() + "/.kde/share/apps/amarok/albumcovers/large/");
     QStringList coverList = dir.entryList(QDir::Files);
     //coverList = coverList.filter(QRegExp("^.{35}$"));
-    int imageIndex = qrand() % coverList.size();
+    int imageIndex = std::rand() % coverList.size();
     
     qDebug() << "Loading " << dir.absoluteFilePath(coverList[imageIndex]);
     QPixmap pixmap(dir.absoluteFilePath(coverList[imageIndex]));
