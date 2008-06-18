@@ -17,6 +17,7 @@
 
 #include <QGraphicsPixmapItem>
 #include <QTimeLine>
+#include <QMap>
 
 #define SIZE 100
 
@@ -33,12 +34,17 @@ public slots:
 
 private:
     void _updateArtwork();
+    void _switchArtwork();
 
     QPixmap m_artwork;
     QPixmap m_artworktmp;
     QTimeLine m_timeline;
     bool m_updatingArtwork;
     bool m_updateArtwork;
+
+    static QMap<QString, int> m_usedArtworks;
+    QString m_artworkFile;
+    QString m_artworkFileTmp;
 };
 
 #endif

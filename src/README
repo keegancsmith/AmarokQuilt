@@ -1,0 +1,48 @@
+.. -*- mode: rst; compile-command: "rst2html.py README AmarokQuilt.html" -*-
+
+=============
+ AmarokQuilt
+=============
+
+:Author: Keegan Carruthers-Smith <keegan.csmith@gmail.com>
+:Version: 0.0.1
+:Date: June 2008
+:URL: http://people.cs.uct.ac.za/~smtkee002/AmarokQuilt.html
+:Download: http://www.kde-apps.org/content/show.php/AmarokQuilt?content=83429
+
+
+.. contents::
+
+
+Description
+===========
+
+A Full Screen mode for Amarok which displays a quilt of your album covers as
+well as the current playing track.
+
+In beta stage, **expect bugs**.
+
+
+Installation
+============
+
+Run the following commands::
+
+  $ qmake
+  $ make
+
+Then to run it run::
+
+  $ ./amarokquilt
+  
+
+Changelog
+=========
+
+* Version 0.0.2
+
+  - Reduces the chances of showing an album cover more than once
+
+* Version 0.0.1 (16 June 2008)
+
+  - Initial release featuring basic animations

@@ -18,14 +18,13 @@
 #include <QDebug>
 #include <cstdlib>
 
+QMap<QString, int> AlbumArtworkItem::m_usedArtworks;
+
 AlbumArtworkItem::AlbumArtworkItem() {
     m_artwork = 0;
     m_updatingArtwork = false;
     _updateArtwork();
-    
-    m_artwork = m_artworktmp;
-    m_artworktmp = QPixmap();
-    setPixmap(m_artwork);
+    _switchArtwork();
 
     m_timeline.setFrameRange(0, 100);
     m_timeline.setDuration(2100);
@@ -41,9 +40,7 @@ void AlbumArtworkItem::updateAnimation(int i) {
 
         // Load new image if necessary
         if (m_updateArtwork) {
-            m_artwork = m_artworktmp;
-            m_artworktmp = QPixmap();
-            setPixmap(m_artwork);
+            _switchArtwork();
             m_updateArtwork = false;
         }
     } else {
@@ -74,12 +71,29 @@ void AlbumArtworkItem::_updateArtwork() {
     QDir dir(QDir::homePath() + "/.kde/share/apps/amarok/albumcovers/large/");
     QStringList coverList = dir.entryList(QDir::Files);
     //coverList = coverList.filter(QRegExp("^.{35}$"));
-    int imageIndex = std::rand() % coverList.size();
     
-    qDebug() << "Loading " << dir.absoluteFilePath(coverList[imageIndex]);
-    QPixmap pixmap(dir.absoluteFilePath(coverList[imageIndex]));
+    // Try five times to find non-conflicting images
+    for (int i = 0; i < 5; i++) {
+        m_artworkFileTmp = coverList[std::rand() % coverList.size()];
+        if (AlbumArtworkItem::m_usedArtworks[m_artworkFileTmp] == 0)
+            break;
+    }
+    AlbumArtworkItem::m_usedArtworks[m_artworkFileTmp]++;
+    
+    qDebug() << "Loading " << m_artworkFileTmp
+             << AlbumArtworkItem::m_usedArtworks[m_artworkFileTmp];
+    QPixmap pixmap(dir.absoluteFilePath(m_artworkFileTmp));
     m_artworktmp = pixmap.scaled(QSize(SIZE,SIZE),
                                  Qt::KeepAspectRatioByExpanding,
                                  Qt::SmoothTransformation)
         .copy(0, 0, SIZE, SIZE);
+}
+
+void AlbumArtworkItem::_switchArtwork() {
+    if (!m_artworkFile.isNull())
+        AlbumArtworkItem::m_usedArtworks[m_artworkFile]--;    
+    m_artworkFile = m_artworkFileTmp;
+    m_artwork = m_artworktmp;
+    m_artworktmp = QPixmap();
+    setPixmap(m_artwork);
 }
