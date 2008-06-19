@@ -26,6 +26,7 @@ AmarokQuilt::AmarokQuilt() {
     qreal hdelta = (height % SIZE) / 2;
 
     m_scene.setSceneRect(0, 0, width, height);
+    m_scene.setBackgroundBrush(QBrush(Qt::black));
     m_scene.setItemIndexMethod(QGraphicsScene::NoIndex);
     
     for (int r = 0; r <= width; r+=SIZE) {
