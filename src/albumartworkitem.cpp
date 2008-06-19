@@ -18,6 +18,8 @@
 #include <QDebug>
 #include <cstdlib>
 
+#define FRAME_RANGE 100
+
 QMap<QString, int> AlbumArtworkItem::m_usedArtworks;
 
 AlbumArtworkItem::AlbumArtworkItem() {
@@ -25,19 +27,20 @@ AlbumArtworkItem::AlbumArtworkItem() {
     _updateArtwork();            // Load an album cover
     _switchArtwork();            // Display the loaded album cover
 
-    // Setup animation to run for 2.1 seconds. It will have a frame rate of
-    // 2100 / 100 ms.
-    m_timeline.setFrameRange(0, 100);
-    m_timeline.setDuration(2100);
+    // Setup animation to run for 1.5 seconds.
+    m_timeline.setFrameRange(0, FRAME_RANGE);
+    m_timeline.setDuration(1500);
+    m_timeline.setCurveShape(QTimeLine::LinearCurve);
     connect(&m_timeline, SIGNAL(frameChanged(int)), SLOT(updateAnimation(int)));
     connect(&m_timeline, SIGNAL(finished()), SLOT(finishedAnimation()));
 }    
 
 void AlbumArtworkItem::updateAnimation(int i) {
     qreal yscale;
-    if (i >= 50) {
+    qreal midpoint = FRAME_RANGE / 2;
+    if (i >= midpoint) {
         // Scale in new image
-        yscale = (i-50)/50.0;
+        yscale = (i-midpoint)/midpoint;
 
         // Load new image if necessary
         if (m_updateArtwork) {
@@ -46,7 +49,7 @@ void AlbumArtworkItem::updateAnimation(int i) {
         }
     } else {
         // Scale out old image
-        yscale = (50-i)/50.0;
+        yscale = (midpoint-i)/midpoint;
     }
 
     resetTransform();
