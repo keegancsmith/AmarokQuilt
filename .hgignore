@@ -1,0 +1,5 @@
+syntax: glob
+*.o
+Makefile
+amarokquilt
+moc_*

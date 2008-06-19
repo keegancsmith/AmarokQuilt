@@ -24,6 +24,7 @@ NowPlayingItem::NowPlayingItem() {
     m_textitem.setParentItem(this);
     m_artworkitem.setPos(0,0);
 
+    // Checks what's playing every second
     startTimer(1000);
 }
 
@@ -46,13 +47,14 @@ void NowPlayingItem::updateText() {
     QString text[3] = {amarokPlayerDCOP("artist"),
                        amarokPlayerDCOP("album"),
                        amarokPlayerDCOP("title")};
-        
+    
+    // Check if the current text is the same
     QString textstr = text[0] + text[1] + text[2];
     if (textstr == m_textstr)
         return;
     m_textstr = textstr;
-        
-        
+    
+    // Build a path of the text to be displayed
     QPainterPath textPath;
     QFont font("Verdana", 26, QFont::Bold);
     qreal pos = 0;
@@ -61,6 +63,7 @@ void NowPlayingItem::updateText() {
         pos = textPath.boundingRect().height() + 10;
     }
 
+    // Paint the text path onto a pixmap
     QPixmap buf(textPath.boundingRect().size().toSize());
     buf.fill(QColor(0,0,0,0));
     QPainter painter(&buf);
@@ -73,6 +76,7 @@ void NowPlayingItem::updateText() {
     painter.drawPath(textPath);
     painter.end();
 
+    // Update the QGraphicsItem to display the new text pixmap
     m_text = buf;
     m_textitem.setPixmap(m_text);
     m_textitem.setPos(SIZEBIG + 10, (SIZEBIG - m_text.height())/2);
@@ -81,16 +85,20 @@ void NowPlayingItem::updateText() {
 
 void NowPlayingItem::updateArtwork() {
     QString artworkstr = amarokPlayerDCOP("coverImage");
+
+    // Check if the current image is the same
     if (artworkstr == m_artworkstr)
         return;
     m_artworkstr = artworkstr;
 
+    // Get the new image
     QPixmap pixmap(artworkstr);
     m_artwork = pixmap.scaled(QSize(SIZEBIG,SIZEBIG),
                               Qt::KeepAspectRatio,
                               Qt::SmoothTransformation)
         .copy(0, 0, SIZEBIG, SIZEBIG);
-        
+    
+    // Update the QGraphicsItem to display the new artwork pixmap
     m_artworkitem.setPixmap(m_artwork);
 }
 

@@ -21,11 +21,12 @@
 QMap<QString, int> AlbumArtworkItem::m_usedArtworks;
 
 AlbumArtworkItem::AlbumArtworkItem() {
-    m_artwork = 0;
-    m_updatingArtwork = false;
-    _updateArtwork();
-    _switchArtwork();
+    m_updatingArtwork = false;   // Not animating
+    _updateArtwork();            // Load an album cover
+    _switchArtwork();            // Display the loaded album cover
 
+    // Setup animation to run for 2.1 seconds. It will have a frame rate of
+    // 2100 / 100 ms.
     m_timeline.setFrameRange(0, 100);
     m_timeline.setDuration(2100);
     connect(&m_timeline, SIGNAL(frameChanged(int)), SLOT(updateAnimation(int)));
@@ -58,9 +59,11 @@ void AlbumArtworkItem::finishedAnimation() {
 }
 
 void AlbumArtworkItem::updateArtwork() {
+    // Already animating, so ignore call
     if (m_updatingArtwork)
         return;
-
+    
+    // Load next artwork to be displayed, then animate it in.
     _updateArtwork();
     m_updateArtwork = true;
     m_updatingArtwork = true;
@@ -68,11 +71,12 @@ void AlbumArtworkItem::updateArtwork() {
 }
 
 void AlbumArtworkItem::_updateArtwork() {
+    // Get a list of cached amarok albums
     QDir dir(QDir::homePath() + "/.kde/share/apps/amarok/albumcovers/large/");
     QStringList coverList = dir.entryList(QDir::Files);
-    //coverList = coverList.filter(QRegExp("^.{35}$"));
     
-    // Try five times to find non-conflicting images
+    // Try five times to find non-conflicting images. This reduces the chances
+    // of displaying an image twice at the same time greatly.
     for (int i = 0; i < 5; i++) {
         m_artworkFileTmp = coverList[std::rand() % coverList.size()];
         if (AlbumArtworkItem::m_usedArtworks[m_artworkFileTmp] == 0)
@@ -80,6 +84,7 @@ void AlbumArtworkItem::_updateArtwork() {
     }
     AlbumArtworkItem::m_usedArtworks[m_artworkFileTmp]++;
     
+    // Load selected cover into the temporary pixmap m_artworktmp
     qDebug() << "Loading " << m_artworkFileTmp
              << AlbumArtworkItem::m_usedArtworks[m_artworkFileTmp];
     QPixmap pixmap(dir.absoluteFilePath(m_artworkFileTmp));
@@ -90,8 +95,11 @@ void AlbumArtworkItem::_updateArtwork() {
 }
 
 void AlbumArtworkItem::_switchArtwork() {
+    // Update global list of displayed artworks
     if (!m_artworkFile.isNull())
-        AlbumArtworkItem::m_usedArtworks[m_artworkFile]--;    
+        AlbumArtworkItem::m_usedArtworks[m_artworkFile]--;
+
+    // Set the current artwork to the tmp one, and remove the references to tmp.
     m_artworkFile = m_artworkFileTmp;
     m_artwork = m_artworktmp;
     m_artworktmp = QPixmap();

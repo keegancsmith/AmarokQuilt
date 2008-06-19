@@ -19,16 +19,19 @@
 #include "amarokquilt.h"
 
 AmarokQuilt::AmarokQuilt() {
+    // Get the dimensions of the screen
     QRect screenSize = QApplication::desktop()->screenGeometry();
     int width = screenSize.width();
     int height = screenSize.height();
     qreal wdelta = (width % SIZE) / 2;
     qreal hdelta = (height % SIZE) / 2;
 
+    // Setup a scene the size of the screen with a black background
     m_scene.setSceneRect(0, 0, width, height);
     m_scene.setBackgroundBrush(QBrush(Qt::black));
     m_scene.setItemIndexMethod(QGraphicsScene::NoIndex);
     
+    // Add each cd artwork cell to the scene
     for (int r = 0; r <= width; r+=SIZE) {
         for (int c = 0; c <= height; c+= SIZE) {
             AlbumArtworkItem *cover = new AlbumArtworkItem();
@@ -38,6 +41,7 @@ AmarokQuilt::AmarokQuilt() {
         }
     }
 
+    // Add the item for displaying the current track name and artwork.
     m_nowPlaying.setPos(90, 90);
     m_nowPlaying.setZValue(9999);
     m_scene.addItem(&m_nowPlaying);

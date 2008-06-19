@@ -36,12 +36,14 @@ private:
     void _updateArtwork();
     void _switchArtwork();
 
-    QPixmap m_artwork;
-    QPixmap m_artworktmp;
-    QTimeLine m_timeline;
-    bool m_updatingArtwork;
-    bool m_updateArtwork;
+    QPixmap m_artwork;       // Currently displayed artwork
+    QPixmap m_artworktmp;    // Buffer of next artwork to display.
+    QTimeLine m_timeline;    // Timeline used in animation
+    bool m_updatingArtwork;  // True if currently animating
+    bool m_updateArtwork;    // True if artwork old artwork is still displayed
 
+    // Following variables are stored to keep track of what is being
+    // displayed. This is used to reduce images being shown more than once.
     static QMap<QString, int> m_usedArtworks;
     QString m_artworkFile;
     QString m_artworkFileTmp;
