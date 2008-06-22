@@ -18,6 +18,7 @@
 #include <QPainter>
 #include <QFont>
 #include <QProcess>
+#include <QTextCodec>
 
 NowPlayingItem::NowPlayingItem() {
     m_artworkitem.setParentItem(this);
@@ -112,5 +113,7 @@ QString NowPlayingItem::amarokPlayerDCOP(const QString &func) const {
     if (!dcop.waitForFinished())
         return "";
 
-    return QString(dcop.readAllStandardOutput()).trimmed();
+    QTextCodec *codec = QTextCodec::codecForLocale();
+    QString encoded = codec->toUnicode(dcop.readAllStandardOutput());
+    return encoded.trimmed();
 }

@@ -42,6 +42,7 @@ Changelog
 * Version 0.0.2
 
   - Reduces the chances of showing an album cover more than once
+  - Unicode support
 
 * Version 0.0.1 (16 June 2008)
 
