@@ -14,16 +14,27 @@
 
 #include <QApplication>
 #include <QTime>
+#include <QDesktopWidget>
 #include <cstdlib>
 
 #include "amarokquilt.h"
-
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
     std::srand(QTime(0,0,0).secsTo(QTime::currentTime()));
 
-    AmarokQuilt amarokQuilt;
+    QString mode = "-demo"; // default mode
+    WId window = 0; // default window id
+
+    if (argc > 1)
+        mode = argv[1];
+
+    if (mode == "-root")
+        window = QApplication::desktop()->winId();
+    else if (argc > 2 && mode == "-window-id")
+        window = QString(argv[2]).toULong();
+
+    AmarokQuilt amarokQuilt(window);
     amarokQuilt.show();
 
     return app.exec();

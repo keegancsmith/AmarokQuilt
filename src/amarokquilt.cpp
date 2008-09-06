@@ -15,16 +15,35 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <cstdlib>
+#include <fstream>
 
 #include "amarokquilt.h"
 
-AmarokQuilt::AmarokQuilt() {
-    // Get the dimensions of the screen
-    QRect screenSize = QApplication::desktop()->screenGeometry();
-    int width = screenSize.width();
-    int height = screenSize.height();
-    qreal wdelta = (width % SIZE) / 2;
-    qreal hdelta = (height % SIZE) / 2;
+AmarokQuilt::AmarokQuilt(WId window) {
+    QRect size;
+    
+    if (window) {
+        // Use an existing window
+        create(window);
+        size = geometry();
+    } else {
+        // Get the dimensions of the screen
+        size = QApplication::desktop()->screenGeometry();
+    }
+
+    int width = size.width();
+    int height = size.height();
+    int item_size = std::min(width / 12, height / 8);
+    if (item_size < 40)
+        item_size = 40;
+    if (item_size > 200)
+        item_size = 200;
+    qreal wdelta = (width % item_size) / 2;
+    qreal hdelta = (height % item_size) / 2;
+
+    std::ofstream fout(QString("/tmp/foo%1.log").arg(std::rand()%100).toStdString().c_str());
+    fout << width << ' ' << height << ' ' << item_size << std::endl;
+    fout.close();
 
     // Setup a scene the size of the screen with a black background
     m_scene.setSceneRect(0, 0, width, height);
@@ -32,9 +51,9 @@ AmarokQuilt::AmarokQuilt() {
     m_scene.setItemIndexMethod(QGraphicsScene::NoIndex);
     
     // Add each cd artwork cell to the scene
-    for (int r = 0; r <= width; r+=SIZE) {
-        for (int c = 0; c <= height; c+= SIZE) {
-            AlbumArtworkItem *cover = new AlbumArtworkItem();
+    for (int r = 0; r <= width; r += item_size) {
+        for (int c = 0; c <= height; c+= item_size) {
+            AlbumArtworkItem *cover = new AlbumArtworkItem(item_size);
             m_artworks << cover;
             cover->setPos(r - hdelta, c - wdelta);
             m_scene.addItem(cover);
@@ -42,11 +61,13 @@ AmarokQuilt::AmarokQuilt() {
     }
 
     // Add the item for displaying the current track name and artwork.
-    m_nowPlaying.setPos(90, 90);
-    m_nowPlaying.setZValue(9999);
-    m_scene.addItem(&m_nowPlaying);
+    m_nowPlaying = new NowPlayingItem(item_size * 1.92);
+    m_nowPlaying->setPos(item_size * 0.9, item_size * 0.9);
+    m_nowPlaying->setZValue(9999);
+    m_scene.addItem(m_nowPlaying);
 
-    setWindowState(windowState() | Qt::WindowFullScreen);
+    if (!window)
+        setWindowState(windowState() | Qt::WindowFullScreen);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setWindowTitle("AmarokQuilt");

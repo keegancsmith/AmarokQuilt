@@ -26,7 +26,7 @@ class NowPlayingItem : public QObject, public QGraphicsItemGroup {
     Q_OBJECT;
 
 public:
-    NowPlayingItem();
+    NowPlayingItem(int size = 192);
 
 protected:
     void timerEvent(QTimerEvent *);
@@ -41,6 +41,7 @@ private:
     QGraphicsPixmapItem m_artworkitem;
     QPixmap m_artwork;
     QPixmap m_text;
+    int m_size;
 
     QString m_artworkstr;
     QString m_textstr;

@@ -19,13 +19,11 @@
 #include <QTimeLine>
 #include <QMap>
 
-#define SIZE 100
-
 class AlbumArtworkItem : public QObject, public QGraphicsPixmapItem {
     Q_OBJECT;
 
 public:
-    AlbumArtworkItem();
+    AlbumArtworkItem(int size = 100);
     void updateArtwork();
 
 public slots:
@@ -41,6 +39,7 @@ private:
     QTimeLine m_timeline;    // Timeline used in animation
     bool m_updatingArtwork;  // True if currently animating
     bool m_updateArtwork;    // True if artwork old artwork is still displayed
+    int m_size;              // Width and height of item
 
     // Following variables are stored to keep track of what is being
     // displayed. This is used to reduce images being shown more than once.

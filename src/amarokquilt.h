@@ -25,13 +25,13 @@ class AmarokQuilt : public QGraphicsView {
     Q_OBJECT;
 
 public:
-    AmarokQuilt();
+    AmarokQuilt(WId window = 0);
     void timerEvent(QTimerEvent *);
 
 private:
     QGraphicsScene m_scene;
     QList<AlbumArtworkItem* > m_artworks;
-    NowPlayingItem m_nowPlaying;
+    NowPlayingItem *m_nowPlaying;
 };
 
 #endif

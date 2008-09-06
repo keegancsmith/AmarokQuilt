@@ -16,13 +16,15 @@
 
 #include <QDir>
 #include <QDebug>
+#include <QImage>
 #include <cstdlib>
 
 #define FRAME_RANGE 100
 
 QMap<QString, int> AlbumArtworkItem::m_usedArtworks;
 
-AlbumArtworkItem::AlbumArtworkItem() {
+AlbumArtworkItem::AlbumArtworkItem(int size) {
+    m_size = size;
     m_updatingArtwork = false;   // Not animating
     _updateArtwork();            // Load an album cover
     _switchArtwork();            // Display the loaded album cover
@@ -42,7 +44,7 @@ void AlbumArtworkItem::updateAnimation(int i) {
         // Scale in new image
         yscale = (i-midpoint)/midpoint;
 
-        // Load new image if necessary
+        // Display new image if necessary
         if (m_updateArtwork) {
             _switchArtwork();
             m_updateArtwork = false;
@@ -53,7 +55,7 @@ void AlbumArtworkItem::updateAnimation(int i) {
     }
 
     resetTransform();
-    translate(0, (SIZE - SIZE * yscale) / 2.0);
+    translate(0, (m_size - m_size * yscale) / 2.0);
     scale(1, yscale);
 }
 
@@ -90,11 +92,11 @@ void AlbumArtworkItem::_updateArtwork() {
     // Load selected cover into the temporary pixmap m_artworktmp
     qDebug() << "Loading " << m_artworkFileTmp
              << AlbumArtworkItem::m_usedArtworks[m_artworkFileTmp];
-    QPixmap pixmap(dir.absoluteFilePath(m_artworkFileTmp));
-    m_artworktmp = pixmap.scaled(QSize(SIZE,SIZE),
-                                 Qt::KeepAspectRatioByExpanding,
-                                 Qt::SmoothTransformation)
-        .copy(0, 0, SIZE, SIZE);
+    QImage image(dir.absoluteFilePath(m_artworkFileTmp));
+    image = image.scaled(QSize(m_size,m_size),
+                         Qt::KeepAspectRatioByExpanding,
+                         Qt::SmoothTransformation);
+    m_artworktmp = QPixmap::fromImage(image.copy(0, 0, m_size, m_size));
 }
 
 void AlbumArtworkItem::_switchArtwork() {

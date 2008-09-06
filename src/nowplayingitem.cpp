@@ -20,7 +20,8 @@
 #include <QProcess>
 #include <QTextCodec>
 
-NowPlayingItem::NowPlayingItem() {
+NowPlayingItem::NowPlayingItem(int size) {
+    m_size = size;
     m_artworkitem.setParentItem(this);
     m_textitem.setParentItem(this);
     m_artworkitem.setPos(0,0);
@@ -80,7 +81,7 @@ void NowPlayingItem::updateText() {
     // Update the QGraphicsItem to display the new text pixmap
     m_text = buf;
     m_textitem.setPixmap(m_text);
-    m_textitem.setPos(SIZEBIG + 10, (SIZEBIG - m_text.height())/2);
+    m_textitem.setPos(m_size + 10, (m_size - m_text.height())/2);
 }
 
 
@@ -94,10 +95,10 @@ void NowPlayingItem::updateArtwork() {
 
     // Get the new image
     QPixmap pixmap(artworkstr);
-    m_artwork = pixmap.scaled(QSize(SIZEBIG,SIZEBIG),
+    m_artwork = pixmap.scaled(QSize(m_size, m_size),
                               Qt::KeepAspectRatio,
                               Qt::SmoothTransformation)
-        .copy(0, 0, SIZEBIG, SIZEBIG);
+        .copy(0, 0, m_size, m_size);
     
     // Update the QGraphicsItem to display the new artwork pixmap
     m_artworkitem.setPixmap(m_artwork);

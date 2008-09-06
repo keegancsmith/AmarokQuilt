@@ -1,0 +1,21 @@
+[Desktop Entry]
+Type=Application
+Name=AmarokQuilt
+Exec=amarokquilt
+Icon=kscreensaver
+Actions=Setup;InWindow;Root
+
+[Desktop Action Setup]
+Name=Setup...
+Exec=amarokquilt -setup
+Icon=kscreensaver
+
+[Desktop Action InWindow]
+Name=Display in specified window
+Exec=amarokquilt -window-id %w
+NoDisplay=true
+
+[Desktop Action Root]
+Name=Display in root window
+Exec=amarokquilt -root
+NoDisplay=true
