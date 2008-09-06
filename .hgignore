@@ -3,3 +3,4 @@ syntax: glob
 Makefile
 amarokquilt
 moc_*
+.hgrc
