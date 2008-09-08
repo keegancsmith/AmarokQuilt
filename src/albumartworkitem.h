@@ -17,6 +17,7 @@
 
 #include <QGraphicsPixmapItem>
 #include <QTimeLine>
+#include <QImage>
 #include <QMap>
 
 class AlbumArtworkItem : public QObject, public QGraphicsPixmapItem {
@@ -29,6 +30,9 @@ public:
 public slots:
     void updateAnimation(int);
     void finishedAnimation();
+
+private slots:
+    void updatePixmap(const QImage& foo);
 
 private:
     void _updateArtwork();

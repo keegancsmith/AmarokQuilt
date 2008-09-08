@@ -16,7 +16,6 @@
 
 #include <QDir>
 #include <QDebug>
-#include <QImage>
 #include <cstdlib>
 
 #define FRAME_RANGE 100
@@ -26,8 +25,8 @@ QMap<QString, int> AlbumArtworkItem::m_usedArtworks;
 AlbumArtworkItem::AlbumArtworkItem(int size) {
     m_size = size;
     m_updatingArtwork = false;   // Not animating
-    _updateArtwork();            // Load an album cover
-    _switchArtwork();            // Display the loaded album cover
+    //_updateArtwork();            // Load an album cover
+    //_switchArtwork();            // Display the loaded album cover
 
     // Setup animation to run for 1.5 seconds.
     m_timeline.setFrameRange(0, FRAME_RANGE);
@@ -61,6 +60,7 @@ void AlbumArtworkItem::updateAnimation(int i) {
 
 void AlbumArtworkItem::finishedAnimation() {
     resetTransform();
+    m_updatingArtwork = false;
 }
 
 void AlbumArtworkItem::updateArtwork() {
@@ -69,10 +69,9 @@ void AlbumArtworkItem::updateArtwork() {
         return;
     
     // Load next artwork to be displayed, then animate it in.
-    _updateArtwork();
     m_updateArtwork = true;
     m_updatingArtwork = true;
-    m_timeline.start();
+    _updateArtwork();
 }
 
 void AlbumArtworkItem::_updateArtwork() {
@@ -96,7 +95,15 @@ void AlbumArtworkItem::_updateArtwork() {
     image = image.scaled(QSize(m_size,m_size),
                          Qt::KeepAspectRatioByExpanding,
                          Qt::SmoothTransformation);
+
+    // Load pixmap in GUI thread
+    QMetaObject::invokeMethod(this, "updatePixmap", Qt::QueuedConnection,
+                              Q_ARG(QImage, image));
+}
+
+void AlbumArtworkItem::updatePixmap(const QImage & image) {
     m_artworktmp = QPixmap::fromImage(image.copy(0, 0, m_size, m_size));
+    m_timeline.start();
 }
 
 void AlbumArtworkItem::_switchArtwork() {

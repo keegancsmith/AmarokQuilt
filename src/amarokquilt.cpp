@@ -42,7 +42,7 @@ AmarokQuilt::AmarokQuilt(WId window) {
     qreal hdelta = (height % item_size) / 2;
 
     // Setup a scene the size of the screen with a black background
-    m_scene.setSceneRect(0, 0, screenSize.width(), screenSize.height());
+    m_scene.setSceneRect(0, 0, width, height);
     m_scene.setBackgroundBrush(QBrush(Qt::black));
     m_scene.setItemIndexMethod(QGraphicsScene::NoIndex);
 
@@ -73,10 +73,10 @@ AmarokQuilt::AmarokQuilt(WId window) {
     setFixedWidth(width);
     setFixedHeight(height);
 
-    // // Start loading album images in a seperate thread. Check if this is a
-    // // memory leak.
-    // ArtworkLoaderThread *loader = new ArtworkLoaderThread(this);
-    // loader->start();
+    // Start loading album images in a seperate thread. Check if this is a
+    // memory leak.
+    ArtworkLoaderThread *loader = new ArtworkLoaderThread(this);
+    loader->start();
 
     // Switch a cd cover every 1.5 seconds
     startTimer(1500);
@@ -88,6 +88,11 @@ void AmarokQuilt::timerEvent(QTimerEvent *) {
 }
 
 void AmarokQuilt::addArtworks() {
+    // Shuffle artworks list
+    for (int n = 0; n < m_artworks.size(); n++)
+        m_artworks.swap(std::rand() % m_artworks.size(),
+                        std::rand() % m_artworks.size());
+
     // Load image
     AlbumArtworkItem *cover;
     foreach(cover, m_artworks)
