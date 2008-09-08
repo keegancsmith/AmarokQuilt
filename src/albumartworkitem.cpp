@@ -35,7 +35,7 @@ AlbumArtworkItem::AlbumArtworkItem(int size) {
     m_timeline.setCurveShape(QTimeLine::LinearCurve);
     connect(&m_timeline, SIGNAL(frameChanged(int)), SLOT(updateAnimation(int)));
     connect(&m_timeline, SIGNAL(finished()), SLOT(finishedAnimation()));
-}    
+}
 
 void AlbumArtworkItem::updateAnimation(int i) {
     qreal yscale;

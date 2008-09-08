@@ -14,6 +14,7 @@
 
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QThread>
 #include <cstdlib>
 
 #include "amarokquilt.h"
@@ -41,10 +42,10 @@ AmarokQuilt::AmarokQuilt(WId window) {
     qreal hdelta = (height % item_size) / 2;
 
     // Setup a scene the size of the screen with a black background
-    m_scene.setSceneRect(0, 0, width, height);
+    m_scene.setSceneRect(0, 0, screenSize.width(), screenSize.height());
     m_scene.setBackgroundBrush(QBrush(Qt::black));
     m_scene.setItemIndexMethod(QGraphicsScene::NoIndex);
-    
+
     // Add each cd artwork cell to the scene
     for (int r = 0; r <= width; r += item_size) {
         for (int c = 0; c <= height; c+= item_size) {
@@ -54,7 +55,7 @@ AmarokQuilt::AmarokQuilt(WId window) {
             m_scene.addItem(cover);
         }
     }
-
+    
     // Add the item for displaying the current track name and artwork.
     m_nowPlaying = new NowPlayingItem(item_size * 1.92);
     m_nowPlaying->setPos(item_size * 0.9, item_size * 0.9);
@@ -72,10 +73,30 @@ AmarokQuilt::AmarokQuilt(WId window) {
     setFixedWidth(width);
     setFixedHeight(height);
 
+    // // Start loading album images in a seperate thread. Check if this is a
+    // // memory leak.
+    // ArtworkLoaderThread *loader = new ArtworkLoaderThread(this);
+    // loader->start();
+
+    // Switch a cd cover every 1.5 seconds
     startTimer(1500);
 }
 
 void AmarokQuilt::timerEvent(QTimerEvent *) {
     int index = std::rand() % m_artworks.size();
     m_artworks[index]->updateArtwork();
+}
+
+void AmarokQuilt::addArtworks() {
+    // Load image
+    AlbumArtworkItem *cover;
+    foreach(cover, m_artworks)
+        cover->updateArtwork();
+
+    // Switch a cd cover every 1.5 seconds
+    startTimer(1500);
+}
+
+void ArtworkLoaderThread::run() {
+    m_quilt->addArtworks();
 }

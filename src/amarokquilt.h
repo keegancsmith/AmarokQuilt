@@ -17,6 +17,7 @@
 
 #include <QGraphicsView>
 #include <QGraphicsScene>
+#include <QThread>
 
 #include "nowplayingitem.h"
 #include "albumartworkitem.h"
@@ -27,11 +28,20 @@ class AmarokQuilt : public QGraphicsView {
 public:
     AmarokQuilt(WId window = 0);
     void timerEvent(QTimerEvent *);
+    void addArtworks();
 
 private:
     QGraphicsScene m_scene;
     QList<AlbumArtworkItem* > m_artworks;
     NowPlayingItem *m_nowPlaying;
+};
+
+class ArtworkLoaderThread : public QThread {
+public:
+    ArtworkLoaderThread(AmarokQuilt *quilt) : m_quilt(quilt) {}
+    void run();
+private:
+    AmarokQuilt *m_quilt;
 };
 
 #endif
