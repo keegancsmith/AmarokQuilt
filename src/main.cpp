@@ -26,13 +26,13 @@ int main(int argc, char *argv[]) {
     QString mode = "-demo"; // default mode
     WId window = 0; // default window id
 
-    if (argc > 1)
-        mode = argv[1];
+    if (app.argc() > 1)
+        mode = app.argv()[1];
 
     if (mode == "-root")
         window = QApplication::desktop()->winId();
-    else if (argc > 2 && mode == "-window-id")
-        window = QString(argv[2]).toULong();
+    else if (app.argc() > 2 && mode == "-window-id")
+        window = QString(app.argv()[2]).toULong();
 
     AmarokQuilt amarokQuilt(window);
     amarokQuilt.show();

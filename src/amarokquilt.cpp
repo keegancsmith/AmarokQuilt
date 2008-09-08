@@ -15,7 +15,6 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <cstdlib>
-#include <fstream>
 
 #include "amarokquilt.h"
 
@@ -24,15 +23,15 @@ AmarokQuilt::AmarokQuilt(WId window) {
     
     if (window) {
         // Use an existing window
-        create(window);
+        create(window, false, true);
         size = geometry();
     } else {
         // Get the dimensions of the screen
         size = QApplication::desktop()->screenGeometry();
     }
 
-    int width = size.width();
-    int height = size.height();
+    int width     = size.width();
+    int height    = size.height();
     int item_size = std::min(width / 12, height / 8);
     if (item_size < 40)
         item_size = 40;
@@ -40,10 +39,6 @@ AmarokQuilt::AmarokQuilt(WId window) {
         item_size = 200;
     qreal wdelta = (width % item_size) / 2;
     qreal hdelta = (height % item_size) / 2;
-
-    std::ofstream fout(QString("/tmp/foo%1.log").arg(std::rand()%100).toStdString().c_str());
-    fout << width << ' ' << height << ' ' << item_size << std::endl;
-    fout.close();
 
     // Setup a scene the size of the screen with a black background
     m_scene.setSceneRect(0, 0, width, height);
@@ -72,6 +67,10 @@ AmarokQuilt::AmarokQuilt(WId window) {
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setWindowTitle("AmarokQuilt");
     setScene(&m_scene);
+
+    // For some reason app resized itself. Fixes size
+    setFixedWidth(width);
+    setFixedHeight(height);
 
     startTimer(1500);
 }

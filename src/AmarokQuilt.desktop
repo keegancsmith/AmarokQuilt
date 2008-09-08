@@ -3,12 +3,12 @@ Type=Application
 Name=AmarokQuilt
 Exec=amarokquilt
 Icon=kscreensaver
-Actions=Setup;InWindow;Root
+Actions=InWindow;Root
 
-[Desktop Action Setup]
-Name=Setup...
-Exec=amarokquilt -setup
-Icon=kscreensaver
+# [Desktop Action Setup]
+# Name=Setup...
+# Exec=amarokquilt -setup
+# Icon=kscreensaver
 
 [Desktop Action InWindow]
 Name=Display in specified window
