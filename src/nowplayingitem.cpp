@@ -81,7 +81,7 @@ void NowPlayingItem::updateText() {
     // Update the QGraphicsItem to display the new text pixmap
     m_text = buf;
     m_textitem.setPixmap(m_text);
-    m_textitem.setPos(m_size + 10, (m_size - m_text.height())/2);
+    m_textitem.setPos(m_size + 15, (m_size - m_text.height())/2);
 }
 
 
@@ -93,13 +93,22 @@ void NowPlayingItem::updateArtwork() {
         return;
     m_artworkstr = artworkstr;
 
-    // Get the new image
-    QPixmap pixmap(artworkstr);
-    m_artwork = pixmap.scaled(QSize(m_size, m_size),
-                              Qt::KeepAspectRatio,
-                              Qt::SmoothTransformation)
-        .copy(0, 0, m_size, m_size);
-    
+    // Get the new image and scale
+    QImage image(artworkstr);
+    image = image.scaled(QSize(m_size, m_size),
+                         Qt::KeepAspectRatio,
+                         Qt::SmoothTransformation);
+
+    // Paint onto black background with 3% border
+    int border = m_size * 0.03;
+    QPixmap pixmap(m_size + 2 * border, m_size + 2 * border);
+    pixmap.fill(Qt::black);
+    QPainter painter(&pixmap);
+    painter.drawImage(border, border, image);
+
+    // Update artwork to bordered scaled cover
+    m_artwork = pixmap;
+
     // Update the QGraphicsItem to display the new artwork pixmap
     m_artworkitem.setPixmap(m_artwork);
 }
