@@ -56,11 +56,15 @@ void AlbumArtworkItem::updateAnimation(int i) {
     resetTransform();
     translate(0, (m_size - m_size * yscale) / 2.0);
     scale(1, yscale);
+    update(); // TODO is it necessary to call update?
+    // TODO maybe make bounding rectangle static. It changes as the item gets
+    // scaled.
 }
 
 void AlbumArtworkItem::finishedAnimation() {
     resetTransform();
     m_updatingArtwork = false;
+    update();
 }
 
 void AlbumArtworkItem::updateArtwork() {

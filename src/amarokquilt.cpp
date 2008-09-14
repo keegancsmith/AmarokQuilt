@@ -45,7 +45,6 @@ AmarokQuilt::AmarokQuilt(WId window) {
     // Setup a scene the size of the screen with a black background
     m_scene.setSceneRect(0, 0, width, height);
     m_scene.setBackgroundBrush(QBrush(Qt::black));
-    m_scene.setItemIndexMethod(QGraphicsScene::NoIndex);
 
     // Add each cd artwork cell to the scene
     for (int r = 0; r <= width; r += item_size) {
