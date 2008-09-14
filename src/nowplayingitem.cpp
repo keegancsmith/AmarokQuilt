@@ -19,6 +19,7 @@
 #include <QFont>
 #include <QProcess>
 #include <QTextCodec>
+#include <QSettings>
 
 NowPlayingItem::NowPlayingItem(int size) {
     m_size = size;
@@ -58,7 +59,9 @@ void NowPlayingItem::updateText() {
     
     // Build a path of the text to be displayed
     QPainterPath textPath;
-    QFont font("Verdana", 26, QFont::Bold);
+    QSettings settings("AmarokQuilt");
+    QFont font = QFont("Verdana", 26, QFont::Bold);
+    font = settings.value("nowplayingfont", font).value<QFont>();
     qreal pos = 0;
     for (int i = 0; i < 3; i++) {
         textPath.addText(0, pos, font, text[i]);

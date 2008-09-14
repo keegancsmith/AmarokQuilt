@@ -31,6 +31,7 @@ AmarokQuilt::AmarokQuilt(WId window) {
         size = QApplication::desktop()->screenGeometry();
     }
 
+    // Calculate album cover size (item_size)
     int width     = size.width();
     int height    = size.height();
     int item_size = std::min(width / 12, height / 8);
@@ -77,9 +78,6 @@ AmarokQuilt::AmarokQuilt(WId window) {
     // memory leak.
     ArtworkLoaderThread *loader = new ArtworkLoaderThread(this);
     loader->start();
-
-    // Switch a cd cover every 1.5 seconds
-    startTimer(1500);
 }
 
 void AmarokQuilt::timerEvent(QTimerEvent *) {
